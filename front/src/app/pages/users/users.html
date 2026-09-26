@@ -1,5 +1,5 @@
 <div class="card wide">
-  <h1>Usuarios</h1>
+  <h1>Gestión de Usuarios</h1>
 
   @if (errorMessage()) {
     <p class="alert">{{ errorMessage() }}</p>
@@ -8,25 +8,74 @@
     <p class="alert ok">{{ successMessage() }}</p>
   }
 
-  <table>
+  <h2>Crear Nuevo Usuario</h2>
+  <form [formGroup]="form" (ngSubmit)="create()" class="user-form">
+    <div class="form-group">
+      <label for="name">Nombre</label>
+      <input id="name" type="text" formControlName="name" placeholder="Nombre completo" />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <small class="error">El nombre es obligatorio (mínimo 3 caracteres)</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" placeholder="correo@dominio.com" />
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <small class="error">Ingresa un correo válido</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="password">Contraseña</label>
+      <input id="password" type="password" formControlName="password" placeholder="********" />
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <small class="error">
+          Mínimo 8 caracteres, una mayúscula, una minúscula y un número
+        </small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="role">Rol</label>
+      <select id="role" formControlName="role">
+        <option value="admin">Administrador</option>
+        <option value="operator">Operador</option>
+        <option value="query">Consulta</option>
+      </select>
+    </div>
+
+    <button type="submit" [disabled]="loading()">Crear Usuario</button>
+  </form>
+
+  <h2>Usuarios Registrados</h2>
+  <table class="users-table">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Nombre</th>
-        <th>Correo</th>
+        <th>Email</th>
         <th>Rol</th>
         <th>Estado</th>
-        <th>Alta</th>
-        <th></th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
       @for (user of users(); track user.id) {
         <tr>
+          <td>{{ user.id }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
-          <td>{{ user.role }}</td>
-          <td>{{ user.isActive ? 'Activo' : 'Inactivo' }}</td>
-          <td>{{ user.createdAt | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <span class="role-badge" [class]="user.role">
+              {{ getRoleLabel(user.role) }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge" [class.active]="user.isActive">
+              {{ user.isActive ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
           <td>
             @if (canDelete(user)) {
               <button type="button" class="danger" (click)="remove(user)">Eliminar</button>
@@ -40,17 +89,4 @@
       }
     </tbody>
   </table>
-
-  <h2>Nuevo usuario</h2>
-  <form [formGroup]="form" (ngSubmit)="create()">
-    <input type="text" formControlName="name" placeholder="Nombre" />
-    <input type="email" formControlName="email" placeholder="correo@dominio.com" />
-    <input type="password" formControlName="password" placeholder="Contrasena" />
-    <select formControlName="role">
-      <option value="admin">Administrador</option>
-      <option value="operator">Operador</option>
-      <option value="query">Consulta</option>
-    </select>
-    <button type="submit">Crear usuario</button>
-  </form>
 </div>

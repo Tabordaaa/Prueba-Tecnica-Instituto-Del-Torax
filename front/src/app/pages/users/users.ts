@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DatePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
 import { getErrorMessage, User } from '../../core/api';
@@ -9,7 +8,7 @@ import { UsersService } from '../../core/users.service';
 
 @Component({
   selector: 'app-users',
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule],
   templateUrl: './users.html',
 })
 export class Users {
@@ -65,11 +64,21 @@ export class Users {
     this.usersService.create(this.form.getRawValue()).subscribe({
       next: () => {
         this.successMessage.set('Usuario creado correctamente');
-        this.form.reset({ role: 'user' });
+        this.form.reset({ role: 'operator' });
         this.loadUsers();
       },
       error: (error) => this.errorMessage.set(getErrorMessage(error)),
     });
+  }
+
+  /** Devuelve la etiqueta amigable para cada rol. */
+  getRoleLabel(role: string): string {
+    const labels: Record<string, string> = {
+      admin: 'Administrador',
+      operator: 'Operador',
+      query: 'Consulta',
+    };
+    return labels[role] ?? role;
   }
 
   remove(user: User): void {
