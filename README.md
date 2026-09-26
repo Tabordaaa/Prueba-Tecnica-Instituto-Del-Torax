@@ -1,4 +1,4 @@
-# Prueba tecnica - Instituto del Torax
+# Prueba tecnica - Instituto del Torax - Login_auth
 
 Login y manejo de usuarios con **Node + NestJS + TypeORM + MySQL + JWT** (back) y **Angular** (front).
 
