@@ -5,8 +5,24 @@
   @if (authService.isLoggedIn()) {
     <nav>
       <a routerLink="/home" routerLinkActive="active">Inicio</a>
-      @if (authService.isAdmin()) {
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      @if (authService.canView('users')) {
         <a routerLink="/users" routerLinkActive="active">Usuarios</a>
+      }
+      @if (authService.canView('upload')) {
+        <a routerLink="/upload" routerLinkActive="active">Cargar Archivos</a>
+      }
+      @if (authService.canView('etl')) {
+        <a routerLink="/etl" routerLinkActive="active">Procesar ETL</a>
+      }
+      @if (authService.canView('records')) {
+        <a routerLink="/records" routerLinkActive="active">Consultar Registros</a>
+      }
+      @if (authService.canView('errors')) {
+        <a routerLink="/errors" routerLinkActive="active">Consultar Errores</a>
+      }
+      @if (authService.canView('reports')) {
+        <a routerLink="/reports" routerLinkActive="active">Reportes</a>
       }
       <button type="button" class="link" (click)="logout()">Salir</button>
     </nav>

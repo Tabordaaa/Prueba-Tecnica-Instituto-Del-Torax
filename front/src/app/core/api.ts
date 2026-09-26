@@ -12,7 +12,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'operator' | 'query';
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

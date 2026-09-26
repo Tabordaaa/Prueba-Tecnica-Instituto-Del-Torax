@@ -35,7 +35,7 @@ export class Users {
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
       ],
     ],
-    role: ['user'],
+    role: ['operator'],
   });
 
   constructor() {
