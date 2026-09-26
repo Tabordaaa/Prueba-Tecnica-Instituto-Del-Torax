@@ -1,0 +1,55 @@
+<div class="card wide">
+  <h1>Usuarios</h1>
+
+  @if (errorMessage()) {
+    <p class="alert">{{ errorMessage() }}</p>
+  }
+  @if (successMessage()) {
+    <p class="alert ok">{{ successMessage() }}</p>
+  }
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Alta</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users(); track user.id) {
+        <tr>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>{{ user.isActive ? 'Activo' : 'Inactivo' }}</td>
+          <td>{{ user.createdAt | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            @if (canDelete(user)) {
+              <button type="button" class="danger" (click)="remove(user)">Eliminar</button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6">{{ loading() ? 'Cargando...' : 'No hay usuarios registrados' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <h2>Nuevo usuario</h2>
+  <form [formGroup]="form" (ngSubmit)="create()">
+    <input type="text" formControlName="name" placeholder="Nombre" />
+    <input type="email" formControlName="email" placeholder="correo@dominio.com" />
+    <input type="password" formControlName="password" placeholder="Contrasena" />
+    <select formControlName="role">
+      <option value="user">user</option>
+      <option value="admin">admin</option>
+    </select>
+    <button type="submit">Crear usuario</button>
+  </form>
+</div>

@@ -1,0 +1,33 @@
+<!--
+  Usuario de prueba creado con "npm run seed" en el back:
+  admin@instituto.com / Admin1234
+-->
+<div class="card">
+  <h1>Iniciar sesion</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label for="email">Correo</label>
+    <input id="email" type="email" formControlName="email" placeholder="correo@dominio.com" />
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <small class="error">Ingresa un correo valido</small>
+    }
+
+    <label for="password">Contrasena</label>
+    <input id="password" type="password" formControlName="password" placeholder="********" />
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+      <small class="error">La contrasena es obligatoria</small>
+    }
+
+    @if (errorMessage()) {
+      <p class="alert">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" [disabled]="loading()">
+      {{ loading() ? 'Entrando...' : 'Entrar' }}
+    </button>
+  </form>
+
+  <p class="footer-link">
+    No tienes cuenta? <a routerLink="/register">Registrate</a>
+  </p>
+</div>

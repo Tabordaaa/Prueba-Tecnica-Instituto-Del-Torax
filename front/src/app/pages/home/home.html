@@ -1,0 +1,19 @@
+<div class="card">
+  <h1>Bienvenido</h1>
+
+  <!-- Datos del usuario del token (GET /api/auth/me) -->
+  <ul class="profile">
+    <li><strong>Nombre:</strong> {{ authService.user()?.name }}</li>
+    <li><strong>Correo:</strong> {{ authService.user()?.email }}</li>
+    <li><strong>Rol:</strong> {{ authService.user()?.role }}</li>
+  </ul>
+
+  @if (authService.isAdmin()) {
+    <p>Como administrador puedes administrar los usuarios del sistema.</p>
+    <a routerLink="/users" class="button-link">Administrar usuarios</a>
+  }
+
+  <button type="button" class="secondary" (click)="authService.logout()">
+    Cerrar sesion
+  </button>
+</div>

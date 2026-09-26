@@ -1,0 +1,37 @@
+<div class="card">
+  <h1>Crear cuenta</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label for="name">Nombre</label>
+    <input id="name" type="text" formControlName="name" placeholder="Nombre completo" />
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+      <small class="error">El nombre debe tener al menos 3 caracteres</small>
+    }
+
+    <label for="email">Correo</label>
+    <input id="email" type="email" formControlName="email" placeholder="correo@dominio.com" />
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <small class="error">Ingresa un correo valido</small>
+    }
+
+    <label for="password">Contrasena</label>
+    <input id="password" type="password" formControlName="password" placeholder="********" />
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+      <small class="error">
+        Minimo 8 caracteres, con minuscula, mayuscula y numero
+      </small>
+    }
+
+    @if (errorMessage()) {
+      <p class="alert">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" [disabled]="loading()">
+      {{ loading() ? 'Creando...' : 'Registrarme' }}
+    </button>
+  </form>
+
+  <p class="footer-link">
+    Ya tienes cuenta? <a routerLink="/login">Inicia sesion</a>
+  </p>
+</div>
