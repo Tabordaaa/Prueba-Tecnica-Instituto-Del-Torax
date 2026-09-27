@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
-import { AuthService } from './auth.service';
+import { AuthService, ViewKey } from './auth.service';
 
 /**
  * Protege las rutas privadas: si no hay sesion iniciada,
@@ -28,4 +28,40 @@ export const authGuard: CanActivateFn = () => {
 
   // No hay sesion -> login
   return router.createUrlTree(['/login']);
+};
+
+/**
+ * Guard combinado que verifica autenticacion Y permisos por rol.
+ *
+ * - Sin sesion -> login
+ * - Token expirado -> 404
+ * - Sin permiso para la vista -> 404
+ * - Con sesion y permiso -> permite acceso
+ *
+ * Uso en routes.ts:
+ * { path: 'users', component: Users, canActivate: [permissionGuard('users')] }
+ */
+export const permissionGuard = (view: ViewKey): CanActivateFn => {
+  return () => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
+
+    // No hay sesion -> login
+    if (!authService.isLoggedIn()) {
+      // Si hay token pero no usuario, el token expiro -> 404
+      if (authService.token) {
+        authService.logout();
+        return router.createUrlTree(['/not-found']);
+      }
+      return router.createUrlTree(['/login']);
+    }
+
+    // Hay sesion pero no tiene permiso para esta vista -> 404
+    if (!authService.canView(view)) {
+      return router.createUrlTree(['/not-found']);
+    }
+
+    // Con sesion y permiso -> permite acceso
+    return true;
+  };
 };
