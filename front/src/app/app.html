@@ -1,8 +1,8 @@
 <header class="topbar">
   <span class="brand">Instituto del Torax</span>
 
-  <!-- Barra de navegacion: solo si hay sesion iniciada -->
-  @if (authService.isLoggedIn()) {
+  <!-- Barra de navegacion: solo si hay sesion iniciada y no esta en login o 404 -->
+  @if (authService.isLoggedIn() && !isLoginOrNotFound()) {
     <nav>
       <a routerLink="/home" routerLinkActive="active">Inicio</a>
       <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>

@@ -1,0 +1,76 @@
+<div class="card wide">
+  <h1>Cargar Archivos CSV</h1>
+
+  @if (errorMessage()) {
+    <p class="alert">{{ errorMessage() }}</p>
+  }
+  @if (successMessage()) {
+    <p class="alert ok">{{ successMessage() }}</p>
+  }
+
+  <div class="upload-zone" [class.drag-over]="dragOver()">
+    <input
+      type="file"
+      id="fileInput"
+      accept=".csv"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+
+    @if (!fileName()) {
+      <div class="upload-prompt">
+        <label for="fileInput" class="upload-label">
+          <span class="upload-icon">📁</span>
+          <p>Arrastra un archivo CSV aquí o haz clic para seleccionarlo</p>
+          <small>
+            Columnas requeridas: tipo_documento, documento, nombres, apellidos,
+            fecha_nacimiento, email, ciudad, estado
+          </small>
+        </label>
+      </div>
+    } @else {
+      <div class="file-info">
+        <p><strong>Archivo seleccionado:</strong> {{ fileName() }}</p>
+        <button type="button" class="link" (click)="clearFile()">
+          Cambiar archivo
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="loading">Procesando archivo...</p>
+  }
+
+  @if (validationResult(); as result) {
+    <div class="validation-summary">
+      <h2>Resultado de la validación</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-value">{{ result.totalRows }}</span>
+          <span class="stat-label">Total de registros</span>
+        </div>
+        <div class="stat valid">
+          <span class="stat-value">{{ result.validRows }}</span>
+          <span class="stat-label">Válidos</span>
+        </div>
+        <div class="stat invalid">
+          <span class="stat-value">{{ result.invalidRows }}</span>
+          <span class="stat-label">Con errores</span>
+        </div>
+      </div>
+
+      @if (result.errors.length > 0) {
+        <div class="errors-list">
+          <h3>Errores encontrados:</h3>
+          <ul>
+            @for (error of result.errors; track $index) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  }
+</div>
