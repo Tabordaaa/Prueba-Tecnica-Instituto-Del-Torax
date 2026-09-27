@@ -1,0 +1,140 @@
+<div class="card wide">
+  <h1>Carga y Procesamiento ETL</h1>
+
+  @if (errorMessage()) {
+    <p class="alert">{{ errorMessage() }}</p>
+  }
+  @if (successMessage()) {
+    <p class="alert ok">{{ successMessage() }}</p>
+  }
+
+  <!-- Zona de subida -->
+  <div class="upload-zone" [class.drag-over]="dragOver()">
+    <input
+      type="file"
+      id="fileInput"
+      accept=".csv"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+
+    @if (!fileName()) {
+      <div class="upload-prompt">
+        <label for="fileInput" class="upload-label">
+          <span class="upload-icon">📁</span>
+          <p>Arrastra un archivo CSV aquí o haz clic para seleccionarlo</p>
+          <small>
+            Columnas requeridas: tipo_documento, documento, nombres, apellidos,
+            fecha_nacimiento, email, ciudad, estado
+          </small>
+        </label>
+      </div>
+    } @else {
+      <div class="file-info">
+        <p><strong>Archivo seleccionado:</strong> {{ fileName() }}</p>
+        <button type="button" class="link" (click)="clearFile()">
+          Cambiar archivo
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Botón de procesar ETL -->
+  @if (state() === 'validated' && validationResult()?.validRows! > 0) {
+    <div class="action-buttons">
+      <button
+        type="button"
+        class="primary"
+        (click)="processEtl()"
+        [disabled]="state() === 'processing'"
+      >
+        {{ state() === 'processing' ? 'Procesando...' : 'Procesar ETL' }}
+      </button>
+    </div>
+  }
+
+  <!-- Resumen de validación -->
+  @if (validationResult(); as result) {
+    <div class="validation-summary">
+      <h2>Resumen de Validación</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-value">{{ result.totalRows }}</span>
+          <span class="stat-label">Total de registros</span>
+        </div>
+        <div class="stat valid">
+          <span class="stat-value">{{ result.validRows }}</span>
+          <span class="stat-label">Válidos</span>
+        </div>
+        <div class="stat invalid">
+          <span class="stat-value">{{ result.invalidRows }}</span>
+          <span class="stat-label">Con errores</span>
+        </div>
+      </div>
+
+      @if (result.errors.length > 0) {
+        <div class="errors-list">
+          <h3>Errores encontrados:</h3>
+          <ul>
+            @for (error of result.errors; track $index) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Resultados del ETL -->
+  @if (etlResult(); as etl) {
+    <div class="etl-results">
+      <h2>Resultados del Proceso ETL</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-value">{{ etl.data.totalRows }}</span>
+          <span class="stat-label">Total de registros</span>
+        </div>
+        <div class="stat valid">
+          <span class="stat-value">{{ etl.data.importedRows }}</span>
+          <span class="stat-label">Importados</span>
+        </div>
+        <div class="stat invalid">
+          <span class="stat-value">{{ etl.data.invalidRows }}</span>
+          <span class="stat-label">Con errores</span>
+        </div>
+        <div class="stat warning">
+          <span class="stat-value">{{ etl.data.duplicatesFound }}</span>
+          <span class="stat-label">Duplicados</span>
+        </div>
+      </div>
+
+      @if (etl.data.errors.length > 0) {
+        <div class="errors-list">
+          <h3>Errores de importación:</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Fila</th>
+                <th>Campo</th>
+                <th>Valor recibido</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (error of etl.data.errors; track $index) {
+                <tr>
+                  <td>{{ error.rowNumber }}</td>
+                  <td>{{ error.field }}</td>
+                  <td>{{ error.receivedValue }}</td>
+                  <td>{{ error.errorMessage }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

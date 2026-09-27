@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { validateEnv } from './config/env.validation';
 import { AuthModule } from './auth/auth.module';
+import { EtlModule } from './etl/etl.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -38,6 +39,7 @@ import { UsersModule } from './users/users.module';
     }),
 
     AuthModule,
+    EtlModule,
     UsersModule,
   ],
 })
