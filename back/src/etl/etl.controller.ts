@@ -317,9 +317,11 @@ export class EtlController {
       queryBuilder.andWhere('person.estado = :estado', { estado });
     }
 
-    // Filtro por ciudad
+    // Filtro por ciudad (búsqueda parcial)
     if (ciudad) {
-      queryBuilder.andWhere('person.ciudad = :ciudad', { ciudad });
+      queryBuilder.andWhere('person.ciudad LIKE :ciudad', {
+        ciudad: `%${ciudad}%`,
+      });
     }
 
     // Paginación

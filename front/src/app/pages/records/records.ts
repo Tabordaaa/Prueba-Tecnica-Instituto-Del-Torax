@@ -4,10 +4,11 @@ import { DatePipe } from '@angular/common';
 import { finalize } from 'rxjs';
 
 import { EtlService, Person } from '../../core/etl.service';
+import { CustomSelect } from './custom-select';
 
 @Component({
   selector: 'app-records',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, CustomSelect],
   templateUrl: './records.html',
 })
 export class Records {
@@ -59,15 +60,32 @@ export class Records {
       });
   }
 
+  // Búsqueda dinámica: se ejecuta al escribir
+  onSearchChange(): void {
+    this.page.set(1);
+    this.loadRecords();
+  }
+
   applyFilters(): void {
     this.page.set(1);
     this.loadRecords();
+  }
+
+  onEstadoChange(value: string): void {
+    this.estado.set(value);
+    this.applyFilters();
   }
 
   clearFilters(): void {
     this.search.set('');
     this.estado.set('');
     this.ciudad.set('');
+    this.page.set(1);
+    this.loadRecords();
+  }
+
+  onLimitChange(value: string): void {
+    this.limit.set(Number(value));
     this.page.set(1);
     this.loadRecords();
   }
