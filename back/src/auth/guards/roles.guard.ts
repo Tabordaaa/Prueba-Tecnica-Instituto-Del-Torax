@@ -1,8 +1,8 @@
 import {
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
@@ -14,6 +14,9 @@ import { UserRole } from '../../users/entities/user-role.enum';
  *
  * Si la ruta tiene @Roles(...) exige uno de esos roles; si no tiene el decorador,
  * basta con estar autenticado (eso lo revisa JwtAuthGuard).
+ *
+ * Cuando un usuario autenticado no tiene permiso, se devuelve 404 Not Found
+ * en lugar de 403 Forbidden, para no revelar que el recurso existe.
  */
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -33,9 +36,7 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
 
     if (!user || !requiredRoles.includes(user.role)) {
-      throw new ForbiddenException(
-        `Se requiere uno de estos roles: ${requiredRoles.join(', ')}`,
-      );
+      throw new NotFoundException('Recurso no encontrado');
     }
 
     return true;

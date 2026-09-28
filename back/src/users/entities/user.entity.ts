@@ -33,7 +33,7 @@ export class User {
   @Column({ length: 255, select: false })
   password: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.QUERY })
   role: UserRole;
 
   @Column({ default: true })

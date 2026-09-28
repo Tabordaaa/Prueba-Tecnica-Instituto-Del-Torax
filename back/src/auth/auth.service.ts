@@ -15,9 +15,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /** Registro publico: siempre crea usuarios con rol "user". */
+  /** Registro publico: siempre crea usuarios con rol "query". */
   register(registerDto: RegisterDto): Promise<User> {
-    return this.usersService.create({ ...registerDto, role: UserRole.USER });
+    return this.usersService.create({ ...registerDto, role: UserRole.QUERY });
   }
 
   /** Login: valida credenciales y devuelve el token de acceso. */

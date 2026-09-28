@@ -23,7 +23,7 @@ export class UsersService {
 
   /** Crea un usuario. El correo no puede estar repetido. */
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { email, password, role = UserRole.USER, ...rest } = createUserDto;
+    const { email, password, role = UserRole.QUERY, ...rest } = createUserDto;
 
     const emailTaken = await this.usersRepository.findOneBy({ email });
     if (emailTaken) {
