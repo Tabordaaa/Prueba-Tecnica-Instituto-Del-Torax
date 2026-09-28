@@ -195,6 +195,29 @@ autenticación, validaciones y códigos de error.
   - Descripción del error
 - Se muestra un resumen con total, válidos, inválidos y duplicados
 
+### Eliminación de la vista "Procesar ETL"
+
+**Decisión:** Se eliminó la vista separada "Procesar ETL" y se unificó con la vista "Cargar Archivos".
+
+**Razones:**
+
+1. **Flujo de usuario más natural:** El usuario no necesita navegar entre vistas para cargar y procesar un archivo. Todo el proceso (carga → validación → procesamiento) ocurre en una sola vista.
+
+2. **Mejor experiencia de usuario:** Al estar todo en una sola vista, el usuario puede ver el progreso del proceso sin cambiar de página.
+
+3. **Código más simple:** Al eliminar una vista, se reduce la complejidad del enrutamiento y se elimina la necesidad de compartir estado entre vistas.
+
+4. **Consistencia con otras vistas:** La vista "Cargar Archivos" ahora incluye todo el flujo del ETL, lo que la hace más completa y útil para el usuario.
+
+**Implementación:**
+- La vista "Cargar Archivos" (`/upload`) ahora incluye:
+  - Zona de subida de archivos
+  - Validación previa del archivo
+  - Botón para procesar el ETL
+  - Resumen de validación
+  - Resultados del proceso ETL
+  - Tabla de errores con paginación
+
 ### Documentación de la API con Swagger
 
 La API se documenta con **Swagger UI** (`@nestjs/swagger`). Al levantar el backend queda
@@ -280,3 +303,4 @@ disponible en `http://localhost:3000/docs` y el JSON OpenAPI en
 │       └── pages/            # Componentes de vistas
 └── README.md
 ```
+.
