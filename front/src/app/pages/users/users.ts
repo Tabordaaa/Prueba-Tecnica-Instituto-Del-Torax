@@ -40,7 +40,6 @@ export class Users {
     password: [
       '',
       [
-        Validators.required,
         Validators.minLength(8),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
       ],
@@ -135,6 +134,10 @@ export class Users {
   // ========== CRUD ==========
 
   submit(): void {
+    console.log('[submit] Formulario inválido:', this.form.invalid);
+    console.log('[submit] Valores del formulario:', this.form.getRawValue());
+    console.log('[submit] Usuario en edición:', this.editingUser());
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -147,31 +150,39 @@ export class Users {
     if (user) {
       // Editar usuario existente
       const { password, ...rest } = this.form.getRawValue();
-      const updateData: any = { ...rest, id: user.id };
+      const updateData: any = { ...rest };
       if (password) updateData.password = password;
 
+      console.log('[submit] Actualizando usuario:', user.id, updateData);
+
       this.usersService.update(user.id, updateData).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('[submit] Usuario actualizado:', response);
           this.successMessage.set('Usuario actualizado correctamente');
           this.modalLoading.set(false);
           this.closeModal();
           this.loadUsers();
         },
         error: (error) => {
+          console.error('[submit] Error actualizando usuario:', error);
           this.errorMessage.set(getErrorMessage(error));
           this.modalLoading.set(false);
         },
       });
     } else {
       // Crear nuevo usuario
+      console.log('[submit] Creando usuario:', this.form.getRawValue());
+
       this.usersService.create(this.form.getRawValue()).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('[submit] Usuario creado:', response);
           this.successMessage.set('Usuario creado correctamente');
           this.modalLoading.set(false);
           this.closeModal();
           this.loadUsers();
         },
         error: (error) => {
+          console.error('[submit] Error creando usuario:', error);
           this.errorMessage.set(getErrorMessage(error));
           this.modalLoading.set(false);
         },
