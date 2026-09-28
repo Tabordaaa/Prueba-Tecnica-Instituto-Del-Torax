@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { ApiHideProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -30,6 +31,7 @@ export class User {
    * proteger los casos en que el hash queda en memoria, por ejemplo tras un save().
    */
   @Exclude()
+  @ApiHideProperty() // el hash nunca sale en las respuestas: tampoco se documenta
   @Column({ length: 255, select: false })
   password: string;
 

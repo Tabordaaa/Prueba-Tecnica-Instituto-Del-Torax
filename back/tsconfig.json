@@ -14,6 +14,7 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
+    "types": ["node"],
     // TypeScript 6 activa "strict" por defecto. Los DTOs y las entidades se completan
     // por validacion y por TypeORM (no en el constructor), por eso se desactiva
     // unicamente esta comprobacion.
