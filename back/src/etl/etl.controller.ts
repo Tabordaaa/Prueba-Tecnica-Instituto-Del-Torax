@@ -15,8 +15,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { ImportRecord } from './entities/import-record.entity';
 import { Person } from './entities/person.entity';
 import { EtlService } from './etl.service';
+import { User } from '../users/entities/user.entity';
 
 @Controller('etl')
 export class EtlController {
@@ -24,7 +26,44 @@ export class EtlController {
     private readonly etlService: EtlService,
     @InjectRepository(Person)
     private readonly personRepository: Repository<Person>,
+    @InjectRepository(ImportRecord)
+    private readonly importRecordRepository: Repository<ImportRecord>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
+
+  /**
+   * GET /api/etl/dashboard
+   * Obtiene las estadísticas para el dashboard.
+   */
+  @Get('dashboard')
+  async getDashboardStats() {
+    const totalUsers = await this.userRepository.count();
+    const totalFiles = await this.importRecordRepository.count();
+    const totalRecords = await this.personRepository.count();
+
+    // Sumar registros válidos e inválidos de todas las importaciones
+    const importRecords = await this.importRecordRepository.find();
+    const totalValidRows = importRecords.reduce(
+      (sum, record) => sum + record.validRows,
+      0,
+    );
+    const totalInvalidRows = importRecords.reduce(
+      (sum, record) => sum + record.invalidRows,
+      0,
+    );
+
+    return {
+      success: true,
+      data: {
+        totalUsers,
+        totalFiles,
+        totalRecords,
+        totalValidRows,
+        totalInvalidRows,
+      },
+    };
+  }
 
   /**
    * POST /api/etl/upload

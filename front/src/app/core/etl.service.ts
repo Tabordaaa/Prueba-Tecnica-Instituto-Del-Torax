@@ -140,6 +140,32 @@ export class EtlService {
   }
 
   /**
+   * GET /api/etl/dashboard
+   * Obtiene las estadísticas para el dashboard.
+   */
+  getDashboardStats(): Observable<{
+    success: boolean;
+    data: {
+      totalUsers: number;
+      totalFiles: number;
+      totalRecords: number;
+      totalValidRows: number;
+      totalInvalidRows: number;
+    };
+  }> {
+    return this.http.get<{
+      success: boolean;
+      data: {
+        totalUsers: number;
+        totalFiles: number;
+        totalRecords: number;
+        totalValidRows: number;
+        totalInvalidRows: number;
+      };
+    }>(`${API_URL}/etl/dashboard`);
+  }
+
+  /**
    * GET /api/etl/errors/:importId
    * Obtiene los errores de una importación específica.
    */

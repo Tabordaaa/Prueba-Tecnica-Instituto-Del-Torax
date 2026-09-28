@@ -4,8 +4,7 @@
   <!-- Barra de navegacion: solo si hay sesion iniciada y no esta en login o 404 -->
   @if (authService.isLoggedIn() && !isLoginOrNotFound()) {
     <nav>
-      <a routerLink="/home" routerLinkActive="active">Inicio</a>
-      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/dashboard" routerLinkActive="active">Inicio</a>
       @if (authService.canView('users')) {
         <a routerLink="/users" routerLinkActive="active">Usuarios</a>
       }
