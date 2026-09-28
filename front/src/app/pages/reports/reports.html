@@ -14,6 +14,63 @@
       <p>Cargando reportes...</p>
     </div>
   } @else {
+    <!-- KPIs principales -->
+    <section class="kpi-section">
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ summary().length }}</span>
+          <span class="kpi-label">Archivos procesados</span>
+        </div>
+      </div>
+
+      <div class="kpi-card success">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ getTotalValidRows() }}</span>
+          <span class="kpi-label">Registros válidos</span>
+        </div>
+      </div>
+
+      <div class="kpi-card danger">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ getTotalInvalidRows() }}</span>
+          <span class="kpi-label">Registros inválidos</span>
+        </div>
+      </div>
+
+      <div class="kpi-card warning">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ getTotalDuplicates() }}</span>
+          <span class="kpi-label">Duplicados</span>
+        </div>
+      </div>
+    </section>
+
     <!-- Sección 1: Tabla de importaciones -->
     <section class="report-section">
       <div class="section-header">
@@ -60,68 +117,71 @@
       </div>
     </section>
 
-    <!-- Sección 2: Errores por tipo -->
-    <section class="report-section">
-      <div class="section-header">
-        <h2>Errores por Tipo de Campo</h2>
-        <span class="section-badge">{{ errorsByType().length }} tipos</span>
-      </div>
-      @if (errorsByType().length > 0) {
-        <div class="errors-chart">
-          @for (error of errorsByType(); track error.field) {
-            <div class="chart-row">
-              <div class="chart-label">{{ getFieldLabel(error.field) }}</div>
-              <div class="chart-bar-container">
-                <div
-                  class="chart-bar"
-                  [style.width.%]="error.percentage"
-                ></div>
-              </div>
-              <div class="chart-value">
-                {{ error.count }} ({{ error.percentage }}%)
-              </div>
-            </div>
-          }
+    <!-- Sección 2 y 3: Errores por tipo y Tendencias en grid -->
+    <div class="reports-grid">
+      <!-- Sección 2: Errores por tipo -->
+      <section class="report-section">
+        <div class="section-header">
+          <h2>Errores por Tipo de Campo</h2>
+          <span class="section-badge">{{ errorsByType().length }} tipos</span>
         </div>
-      } @else {
-        <p class="no-data">No hay errores registrados</p>
-      }
-    </section>
+        @if (errorsByType().length > 0) {
+          <div class="errors-chart">
+            @for (error of errorsByType(); track error.field) {
+              <div class="chart-row">
+                <div class="chart-label">{{ getFieldLabel(error.field) }}</div>
+                <div class="chart-bar-container">
+                  <div
+                    class="chart-bar"
+                    [style.width.%]="error.percentage"
+                  ></div>
+                </div>
+                <div class="chart-value">
+                  {{ error.count }} ({{ error.percentage }}%)
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="no-data">No hay errores registrados</p>
+        }
+      </section>
 
-    <!-- Sección 3: Tendencias -->
-    <section class="report-section">
-      <div class="section-header">
-        <h2>Tendencias de Importaciones</h2>
-        <span class="section-badge">{{ trends().length }} meses</span>
-      </div>
-      @if (trends().length > 0) {
-        <div class="trends-chart">
-          @for (trend of trends(); track trend.month) {
-            <div class="trend-month">
-              <div class="trend-month-label">{{ formatMonth(trend.month) }}</div>
-              <div class="trend-bars">
-                <div class="trend-bar valid" [style.height.px]="trend.validRows > 0 ? Math.max(trend.validRows * 2, 20) : 0" title="Válidos: {{ trend.validRows }}"></div>
-                <div class="trend-bar invalid" [style.height.px]="trend.invalidRows > 0 ? Math.max(trend.invalidRows * 2, 20) : 0" title="Inválidos: {{ trend.invalidRows }}"></div>
-              </div>
-              <div class="trend-info">
-                <span class="trend-files">{{ trend.files }} archivo(s)</span>
-                <span class="trend-valid">{{ trend.validRows }} válidos</span>
-                <span class="trend-invalid">{{ trend.invalidRows }} inválidos</span>
-              </div>
-            </div>
-          }
+      <!-- Sección 3: Tendencias -->
+      <section class="report-section">
+        <div class="section-header">
+          <h2>Tendencias de Importaciones</h2>
+          <span class="section-badge">{{ trends().length }} meses</span>
         </div>
-        <div class="trends-legend">
-          <span class="legend-item">
-            <span class="legend-color valid"></span> Válidos
-          </span>
-          <span class="legend-item">
-            <span class="legend-color invalid"></span> Inválidos
-          </span>
-        </div>
-      } @else {
-        <p class="no-data">No hay datos de tendencias</p>
-      }
-    </section>
+        @if (trends().length > 0) {
+          <div class="trends-chart">
+            @for (trend of trends(); track trend.month) {
+              <div class="trend-month">
+                <div class="trend-month-label">{{ formatMonth(trend.month) }}</div>
+                <div class="trend-bars">
+                  <div class="trend-bar valid" [style.height.px]="getBarHeight(trend.validRows)" title="Válidos: {{ trend.validRows }}"></div>
+                  <div class="trend-bar invalid" [style.height.px]="getBarHeight(trend.invalidRows)" title="Inválidos: {{ trend.invalidRows }}"></div>
+                </div>
+                <div class="trend-info">
+                  <span class="trend-files">{{ trend.files }} archivo(s)</span>
+                  <span class="trend-valid">{{ trend.validRows }} válidos</span>
+                  <span class="trend-invalid">{{ trend.invalidRows }} inválidos</span>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="trends-legend">
+            <span class="legend-item">
+              <span class="legend-color valid"></span> Válidos
+            </span>
+            <span class="legend-item">
+              <span class="legend-color invalid"></span> Inválidos
+            </span>
+          </div>
+        } @else {
+          <p class="no-data">No hay datos de tendencias</p>
+        }
+      </section>
+    </div>
   }
 </div>

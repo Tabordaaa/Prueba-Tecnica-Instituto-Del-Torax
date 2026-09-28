@@ -126,10 +126,31 @@ export class Reports {
 
   getStatusClass(status: string): string {
     const classes: Record<string, string> = {
-      COMPLETADO: 'completed',
-      PROCESSING: 'processing',
-      FAILED: 'failed',
+      COMPLETED: 'COMPLETED',
+      PROCESSING: 'PROCESSING',
+      FAILED: 'FAILED',
     };
     return classes[status] ?? '';
+  }
+
+  getTotalValidRows(): number {
+    return this.summary().reduce((sum, item) => sum + item.validRows, 0);
+  }
+
+  getTotalInvalidRows(): number {
+    return this.summary().reduce((sum, item) => sum + item.invalidRows, 0);
+  }
+
+  getTotalDuplicates(): number {
+    return this.summary().reduce((sum, item) => sum + item.duplicatesFound, 0);
+  }
+
+  getBarHeight(value: number): number {
+    const maxBarHeight = 120;
+    const maxValue = Math.max(
+      ...this.trends().map((t) => Math.max(t.validRows, t.invalidRows)),
+      1,
+    );
+    return Math.min((value / maxValue) * maxBarHeight, maxBarHeight);
   }
 }

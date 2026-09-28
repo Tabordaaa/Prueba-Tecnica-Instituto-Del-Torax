@@ -46,22 +46,31 @@ export const permissionGuard = (view: ViewKey): CanActivateFn => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
+    console.log('[permissionGuard] Vista:', view);
+    console.log('[permissionGuard] Usuario:', authService.user());
+    console.log('[permissionGuard] isLoggedIn:', authService.isLoggedIn());
+    console.log('[permissionGuard] canView:', authService.canView(view));
+
     // No hay sesion -> login
     if (!authService.isLoggedIn()) {
       // Si hay token pero no usuario, el token expiro -> 404
       if (authService.token) {
+        console.log('[permissionGuard] Token expirado, redirigiendo a 404');
         authService.logout();
         return router.createUrlTree(['/not-found']);
       }
+      console.log('[permissionGuard] No hay sesion, redirigiendo a login');
       return router.createUrlTree(['/login']);
     }
 
     // Hay sesion pero no tiene permiso para esta vista -> 404
     if (!authService.canView(view)) {
+      console.log('[permissionGuard] Sin permiso, redirigiendo a 404');
       return router.createUrlTree(['/not-found']);
     }
 
     // Con sesion y permiso -> permite acceso
+    console.log('[permissionGuard] Acceso permitido');
     return true;
   };
 };
