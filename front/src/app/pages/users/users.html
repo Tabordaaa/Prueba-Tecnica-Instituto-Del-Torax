@@ -1,5 +1,14 @@
-<div class="card wide">
-  <h1>Usuarios</h1>
+<div class="users-container">
+  <div class="users-header">
+    <h1>Gestión de Usuarios</h1>
+    <button type="button" class="btn-primary" (click)="openCreateModal()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Crear Usuario
+    </button>
+  </div>
 
   @if (errorMessage()) {
     <p class="alert">{{ errorMessage() }}</p>
@@ -8,49 +17,182 @@
     <p class="alert ok">{{ successMessage() }}</p>
   }
 
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>Rol</th>
-        <th>Estado</th>
-        <th>Alta</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (user of users(); track user.id) {
+  <!-- Tabla de usuarios -->
+  <div class="table-container">
+    <table class="users-table">
+      <thead>
         <tr>
-          <td>{{ user.name }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.role }}</td>
-          <td>{{ user.isActive ? 'Activo' : 'Inactivo' }}</td>
-          <td>{{ user.createdAt | date: 'dd/MM/yyyy' }}</td>
-          <td>
-            @if (canDelete(user)) {
-              <button type="button" class="danger" (click)="remove(user)">Eliminar</button>
-            }
-          </td>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Alta</th>
+          <th>Acciones</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="6">{{ loading() ? 'Cargando...' : 'No hay usuarios registrados' }}</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-
-  <h2>Nuevo usuario</h2>
-  <form [formGroup]="form" (ngSubmit)="create()">
-    <input type="text" formControlName="name" placeholder="Nombre" />
-    <input type="email" formControlName="email" placeholder="correo@dominio.com" />
-    <input type="password" formControlName="password" placeholder="Contrasena" />
-    <select formControlName="role">
-      <option value="admin">Administrador</option>
-      <option value="operator">Operador</option>
-      <option value="query">Consulta</option>
-    </select>
-    <button type="submit">Crear usuario</button>
-  </form>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr>
+            <td>{{ user.id }}</td>
+            <td class="user-name">{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <span class="role-badge" [class]="getRoleClass(user.role)">
+                {{ getRoleLabel(user.role) }}
+              </span>
+            </td>
+            <td>
+              <span class="status-indicator" [class.active]="user.isActive">
+                <span class="status-dot"></span>
+                {{ user.isActive ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>{{ user.createdAt | date: 'dd/MM/yyyy' }}</td>
+            <td class="actions">
+              <button
+                type="button"
+                class="icon-btn edit"
+                (click)="openEditModal(user)"
+                title="Editar"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              @if (canDelete(user)) {
+                <button
+                  type="button"
+                  class="icon-btn delete"
+                  (click)="openDeleteModal(user)"
+                  title="Eliminar"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty-cell">
+              {{ loading() ? 'Cargando...' : 'No hay usuarios registrados' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<!-- Modal para crear/editar usuario -->
+@if (showModal()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingUser() ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h2>
+        <button type="button" class="modal-close" (click)="closeModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
+        <div class="form-group">
+          <label for="name">Nombre</label>
+          <input id="name" type="text" formControlName="name" placeholder="Nombre completo" />
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <small class="error">El nombre es obligatorio (mínimo 3 caracteres)</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" placeholder="correo@dominio.com" />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <small class="error">Ingresa un correo válido</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            Contraseña
+            @if (editingUser()) {
+              <small class="hint">(dejar vacío para no cambiar)</small>
+            }
+          </label>
+          <input id="password" type="password" formControlName="password" placeholder="********" />
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <small class="error">
+              Mínimo 8 caracteres, una mayúscula, una minúscula y un número
+            </small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="role">Rol</label>
+          <select id="role" formControlName="role">
+            <option value="admin">Administrador</option>
+            <option value="operator">Operador</option>
+            <option value="query">Consulta</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="modalLoading()">
+            {{ modalLoading() ? 'Guardando...' : (editingUser() ? 'Guardar Cambios' : 'Crear Usuario') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Modal de confirmación para eliminar -->
+@if (showConfirmModal()) {
+  <div class="modal-overlay" (click)="closeConfirmModal()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Confirmar Eliminación</h2>
+        <button type="button" class="modal-close" (click)="closeConfirmModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="confirm-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <p class="confirm-message">
+          ¿Estás seguro de que deseas eliminar al usuario
+          <strong>{{ userToDelete()?.name }}</strong>?
+        </p>
+        <p class="confirm-warning">Esta acción no se puede deshacer.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeConfirmModal()">
+          Cancelar
+        </button>
+        <button type="button" class="btn-danger" (click)="confirmDelete()" [disabled]="deleteLoading()">
+          {{ deleteLoading() ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
