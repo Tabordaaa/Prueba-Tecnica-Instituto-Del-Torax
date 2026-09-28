@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 
 import { EtlService, EtlResult } from '../../core/etl.service';
@@ -16,6 +17,7 @@ type UploadState = 'idle' | 'validating' | 'validated' | 'processing' | 'complet
 
 @Component({
   selector: 'app-upload',
+  imports: [FormsModule],
   templateUrl: './upload.html',
 })
 export class Upload {
@@ -28,6 +30,18 @@ export class Upload {
   readonly validationResult = signal<CsvValidationResult | null>(null);
   readonly etlResult = signal<EtlResult | null>(null);
   readonly dragOver = signal(false);
+
+  // Paginación para la tabla de errores
+  readonly errorsPage = signal(1);
+  readonly errorsLimit = signal(10);
+  readonly errorsTotal = signal(0);
+  readonly errorsTotalPages = signal(0);
+  readonly paginatedErrors = signal<Array<{
+    rowNumber: number;
+    field: string;
+    receivedValue: string;
+    errorMessage: string;
+  }>>([]);
 
   private allowedExtensions = ['.csv'];
   private requiredColumns = [
@@ -279,6 +293,7 @@ export class Upload {
           this.etlResult.set(result);
           this.state.set('completed');
           this.successMessage.set(result.message);
+          this.setupErrorsPagination(result.data.errors);
         },
         error: (error) => {
           this.errorMessage.set(
@@ -287,6 +302,47 @@ export class Upload {
           this.state.set('error');
         },
       });
+  }
+
+  private setupErrorsPagination(errors: Array<{
+    rowNumber: number;
+    field: string;
+    receivedValue: string;
+    errorMessage: string;
+  }>): void {
+    this.errorsTotal.set(errors.length);
+    this.errorsTotalPages.set(Math.ceil(errors.length / this.errorsLimit()));
+    this.errorsPage.set(1);
+    this.updatePaginatedErrors();
+  }
+
+  private updatePaginatedErrors(): void {
+    const errors = this.etlResult()?.data.errors ?? [];
+    const start = (this.errorsPage() - 1) * this.errorsLimit();
+    const end = start + this.errorsLimit();
+    this.paginatedErrors.set(errors.slice(start, end));
+  }
+
+  nextErrorsPage(): void {
+    if (this.errorsPage() < this.errorsTotalPages()) {
+      this.errorsPage.update((p) => p + 1);
+      this.updatePaginatedErrors();
+    }
+  }
+
+  prevErrorsPage(): void {
+    if (this.errorsPage() > 1) {
+      this.errorsPage.update((p) => p - 1);
+      this.updatePaginatedErrors();
+    }
+  }
+
+  changeErrorsLimit(): void {
+    this.errorsPage.set(1);
+    this.updatePaginatedErrors();
+    this.errorsTotalPages.set(
+      Math.ceil(this.errorsTotal() / this.errorsLimit()),
+    );
   }
 
   clearFile(): void {

@@ -798,6 +798,333 @@ h2 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+/* ---------- Vista de Carga de Archivos ---------- */
+.upload-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.upload-header {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.upload-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.upload-subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.upload-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f0f2f5;
+}
+
+.section-header h2 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--text);
+}
+
+.section-badge {
+  background: #e9ecef;
+  color: #495057;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Zona de subida */
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: #fafbfc;
+}
+
+.upload-zone:hover,
+.upload-zone.drag-over {
+  border-color: var(--primary);
+  background: #f0f7fc;
+}
+
+.upload-prompt {
+  cursor: pointer;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.upload-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #e3f2fd;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.upload-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.upload-text {
+  font-size: 1rem;
+  color: var(--text);
+  margin: 0;
+  font-weight: 500;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+}
+
+/* Archivo seleccionado */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.file-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #e7f5ec;
+  color: #1e6b3a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.file-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.file-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.btn-link:hover {
+  color: #1a4f73;
+  text-decoration: underline;
+}
+
+.btn-link svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Botón de procesar */
+.action-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-large {
+  padding: 0.85rem 2rem;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-large svg {
+  width: 20px;
+  height: 20px;
+}
+
+.spinner-small {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Stats grid para upload */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid var(--primary);
+}
+
+.stat-card.success {
+  border-left-color: #1e6b3a;
+}
+
+.stat-card.danger {
+  border-left-color: var(--danger);
+}
+
+.stat-card.warning {
+  border-left-color: #856404;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(31, 95, 139, 0.1);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.stat-card.success .stat-icon {
+  background: rgba(30, 107, 58, 0.1);
+  color: #1e6b3a;
+}
+
+.stat-card.danger .stat-icon {
+  background: rgba(179, 38, 30, 0.1);
+  color: var(--danger);
+}
+
+.stat-card.warning .stat-icon {
+  background: rgba(133, 100, 4, 0.1);
+  color: #856404;
+}
+
+.stat-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.stat-card .stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Tabla de errores de importación */
+.errors-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.errors-table th,
+.errors-table td {
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.errors-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: #e9ecef;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.received-value {
+  font-family: monospace;
+  color: #6c757d;
+}
+
 /* ---------- Vista de Registros ---------- */
 .records-container {
   width: 100%;
