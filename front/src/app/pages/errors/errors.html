@@ -1,20 +1,27 @@
-<div class="card wide">
-  <h1>Consulta de Errores</h1>
+<div class="errors-container">
+  <div class="errors-header">
+    <h1>Consulta de Errores</h1>
+    <p class="errors-subtitle">Detalle de errores encontrados durante las importaciones</p>
+  </div>
 
   @if (errorMessage()) {
     <p class="alert">{{ errorMessage() }}</p>
   }
 
   @if (loading()) {
-    <p class="loading">Cargando...</p>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando errores...</p>
+    </div>
   } @else {
     <!-- Selector de archivos -->
-    <div class="file-selector">
+    <div class="file-selector-section">
       <label for="fileSelect">Seleccionar archivo:</label>
       <select
         id="fileSelect"
         [ngModel]="selectedFileId()"
         (ngModelChange)="selectFile($event)"
+        class="file-select"
       >
         @for (file of files(); track file.importId) {
           <option [value]="file.importId">
@@ -26,40 +33,102 @@
 
     <!-- Resumen de errores -->
     <div class="errors-summary">
-      <p>
-        Archivo: <strong>{{ getSelectedFileName() }}</strong>
-      </p>
-      <p>Errores encontrados: <strong>{{ errors().length }}</strong></p>
+      <div class="summary-card">
+        <div class="summary-icon error">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <div class="summary-content">
+          <span class="summary-label">Errores encontrados</span>
+          <span class="summary-value">{{ errors().length }}</span>
+        </div>
+      </div>
     </div>
 
     <!-- Tabla de errores -->
     @if (errors().length > 0) {
-      <table class="errors-table">
-        <thead>
-          <tr>
-            <th>Fila</th>
-            <th>Campo</th>
-            <th>Valor</th>
-            <th>Error</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (error of errors(); track $index) {
+      <div class="table-container">
+        <table class="users-table">
+          <thead>
             <tr>
-              <td>{{ error.rowNumber }}</td>
-              <td>
-                <span class="field-badge" [class]="getErrorClass(error.field)">
-                  {{ error.field }}
-                </span>
-              </td>
-              <td class="received-value">{{ error.receivedValue }}</td>
-              <td>{{ error.errorMessage }}</td>
+              <th>Fila</th>
+              <th>Campo</th>
+              <th>Valor</th>
+              <th>Error</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (error of paginatedErrors(); track $index) {
+              <tr>
+                <td class="row-number">{{ error.rowNumber }}</td>
+                <td>
+                  <span class="field-badge">{{ error.field }}</span>
+                </td>
+                <td class="received-value">{{ error.receivedValue }}</td>
+                <td class="error-message">{{ error.errorMessage }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="empty-cell">No hay errores</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="pagination">
+        <div class="pagination-info">
+          <p>
+            Mostrando {{ paginatedErrors().length }} de {{ total() }} errores
+            (Página {{ page() }} de {{ totalPages() }})
+          </p>
+          <div class="limit-selector">
+            <label>Mostrar:</label>
+            <select [(ngModel)]="limit" (change)="changeLimit()">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+        </div>
+        <div class="pagination-buttons">
+          <button
+            type="button"
+            class="page-btn"
+            (click)="prevPage()"
+            [disabled]="page() <= 1"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Anterior
+          </button>
+          <button
+            type="button"
+            class="page-btn"
+            (click)="nextPage()"
+            [disabled]="page() >= totalPages()"
+          >
+            Siguiente
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
     } @else {
-      <p class="no-errors">No se encontraron errores en este archivo.</p>
+      <div class="no-data">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <p>No se encontraron errores en este archivo.</p>
+      </div>
     }
   }
 </div>

@@ -814,6 +814,186 @@ h2 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+/* ---------- Vista de Errores ---------- */
+.errors-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.errors-header {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.errors-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.errors-subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.file-selector-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.file-selector-section label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.file-select {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.65rem 2.5rem 0.65rem 0.85rem;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f8b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: all 0.25s ease;
+}
+
+.file-select:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(31, 95, 139, 0.12);
+}
+
+.file-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(31, 95, 139, 0.1);
+}
+
+.errors-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.summary-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e3f2fd;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.summary-icon.error {
+  background: #fdecea;
+  color: var(--danger);
+}
+
+.summary-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.summary-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.summary-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Tabla de errores */
+.users-table td.row-number {
+  font-weight: 600;
+  color: var(--primary);
+  font-family: monospace;
+}
+
+.users-table td.received-value {
+  font-family: monospace;
+  color: #6c757d;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.users-table td.error-message {
+  color: var(--text);
+}
+
+.field-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  background: #e9ecef;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.no-data {
+  background: #fff;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  color: #6c757d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.no-data svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  color: #28a745;
+}
+
+.no-data p {
+  margin: 0;
+  font-size: 1rem;
+}
+
 /* ---------- Vista de Historial ---------- */
 .history-container {
   width: 100%;

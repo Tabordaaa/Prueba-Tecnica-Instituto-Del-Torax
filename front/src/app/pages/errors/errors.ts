@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 
@@ -17,6 +17,13 @@ export class Errors {
   readonly loading = signal(false);
   readonly errorMessage = signal('');
   readonly selectedFileId = signal<number | null>(null);
+
+  // Paginación
+  readonly page = signal(1);
+  readonly limit = signal(10);
+  readonly total = signal(0);
+  readonly totalPages = signal(0);
+  readonly paginatedErrors = signal<ImportErrorItem[]>([]);
 
   constructor() {
     this.loadFiles();
@@ -58,7 +65,13 @@ export class Errors {
       .getErrors(importId)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: (response) => this.errors.set(response.data),
+        next: (response) => {
+          this.errors.set(response.data);
+          this.total.set(response.data.length);
+          this.totalPages.set(Math.ceil(response.data.length / this.limit()));
+          this.page.set(1);
+          this.updatePaginatedErrors();
+        },
         error: (error) => {
           const message =
             error?.error?.message ?? 'Error al cargar los errores';
@@ -67,12 +80,39 @@ export class Errors {
       });
   }
 
-  getSelectedFileName(): string {
+  private updatePaginatedErrors(): void {
+    const errors = this.errors();
+    const start = (this.page() - 1) * this.limit();
+    const end = start + this.limit();
+    this.paginatedErrors.set(errors.slice(start, end));
+  }
+
+  nextPage(): void {
+    if (this.page() < this.totalPages()) {
+      this.page.update((p) => p + 1);
+      this.updatePaginatedErrors();
+    }
+  }
+
+  prevPage(): void {
+    if (this.page() > 1) {
+      this.page.update((p) => p - 1);
+      this.updatePaginatedErrors();
+    }
+  }
+
+  changeLimit(): void {
+    this.page.set(1);
+    this.totalPages.set(Math.ceil(this.total() / this.limit()));
+    this.updatePaginatedErrors();
+  }
+
+  readonly selectedFileName = computed(() => {
     const selected = this.files().find(
       (f) => f.importId === this.selectedFileId()
     );
-    return selected?.fileName ?? '';
-  }
+    return selected?.fileName ?? 'Seleccione un archivo';
+  });
 
   getErrorClass(field: string): string {
     const classes: Record<string, string> = {
