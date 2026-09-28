@@ -618,24 +618,40 @@ h2 {
 }
 
 .status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
   white-space: nowrap;
 }
 
+/* Completado/Activo - verde con punto */
+.status-badge.COMPLETED,
 .status-badge.completed {
   background: #e7f5ec;
   color: #1e6b3a;
 }
 
+.status-badge.COMPLETED::before,
+.status-badge.completed::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+.status-badge.PROCESSING,
 .status-badge.processing {
   background: #fff3cd;
   color: #856404;
 }
 
+.status-badge.FAILED,
 .status-badge.failed {
   background: #fdecea;
   color: var(--danger);
@@ -797,6 +813,107 @@ h2 {
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
+
+/* ---------- Vista de Historial ---------- */
+.history-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.history-header {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.history-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.history-subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.history-table th,
+.history-table td {
+  text-align: left;
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.history-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.history-table td {
+  color: #495057;
+}
+
+.history-table td.id-cell {
+  font-weight: 600;
+  color: var(--primary);
+  font-family: monospace;
+}
+
+.history-table td.file-name {
+  font-weight: 500;
+  color: var(--text);
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-icon {
+  display: none; /* Icono removido para no competir con la información */
+}
+
+.history-table td.valid {
+  color: #1e6b3a;
+  font-weight: 600;
+}
+
+.history-table td.invalid {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.user-avatar-small {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Los estilos de status-badge están definidos arriba en la sección de Reportes */
 
 /* ---------- Vista de Carga de Archivos ---------- */
 .upload-container {

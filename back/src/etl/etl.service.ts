@@ -201,7 +201,7 @@ export class EtlService {
       invalidRows: result.invalidRows,
       duplicatesFound: result.duplicatesFound,
       importedRows: result.importedRows,
-      status: 'completed',
+      status: 'COMPLETED',
     });
 
     return result;

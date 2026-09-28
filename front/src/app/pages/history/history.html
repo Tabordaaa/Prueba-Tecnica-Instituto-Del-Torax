@@ -1,48 +1,128 @@
-<div class="card wide">
-  <h1>Historial de Archivos</h1>
+<div class="history-container">
+  <div class="history-header">
+    <h1>Historial de Archivos</h1>
+    <p class="history-subtitle">Registro de todos los archivos procesados en el sistema</p>
+  </div>
 
   @if (errorMessage()) {
     <p class="alert">{{ errorMessage() }}</p>
   }
 
+  <!-- Filtros -->
+  <div class="filters">
+    <div class="filter-group search-group">
+      <label>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        Buscar
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="search"
+        (ngModelChange)="applyFilters()"
+        placeholder="Nombre de archivo o usuario..."
+      />
+    </div>
+
+    <div class="filter-actions">
+      <button type="button" class="btn-secondary" (click)="clearFilters()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+        Limpiar
+      </button>
+    </div>
+  </div>
+
   @if (loading()) {
-    <p class="loading">Cargando historial...</p>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando historial...</p>
+    </div>
   } @else {
-    <table class="history-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre del archivo</th>
-          <th>Fecha de carga</th>
-          <th>Usuario</th>
-          <th>Total registros</th>
-          <th>Válidos</th>
-          <th>Inválidos</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of history(); track item.id) {
+    <div class="table-container">
+      <table class="users-table">
+        <thead>
           <tr>
-            <td>{{ item.id }}</td>
-            <td>{{ item.fileName }}</td>
-            <td>{{ item.importedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ item.importedByName }}</td>
-            <td>{{ item.totalRows }}</td>
-            <td class="valid">{{ item.validRows }}</td>
-            <td class="invalid">{{ item.invalidRows }}</td>
-            <td>
-              <span class="status-badge" [class]="getStatusClass(item.status)">
-                {{ getStatusLabel(item.status) }}
-              </span>
-            </td>
+            <th>ID</th>
+            <th>Nombre del archivo</th>
+            <th>Fecha de carga</th>
+            <th>Usuario</th>
+            <th>Total registros</th>
+            <th>Válidos</th>
+            <th>Inválidos</th>
+            <th>Estado</th>
           </tr>
-        } @empty {
-          <tr>
-            <td colspan="8">No hay archivos importados</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (item of history(); track item.id) {
+            <tr>
+              <td>{{ item.id }}</td>
+              <td class="file-name">{{ item.fileName }}</td>
+              <td>{{ item.importedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="user-name">{{ item.importedByName }}</td>
+              <td>{{ item.totalRows }}</td>
+              <td class="valid">{{ item.validRows }}</td>
+              <td class="invalid">{{ item.invalidRows }}</td>
+              <td>
+                <span class="status-badge" [class]="getStatusClass(item.status)">
+                  {{ getStatusLabel(item.status) }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-cell">No hay archivos importados</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination">
+      <div class="pagination-info">
+        <p>
+          Mostrando {{ history().length }} de {{ total() }} registros
+          (Página {{ page() }} de {{ totalPages() }})
+        </p>
+        <div class="limit-selector">
+          <label>Mostrar:</label>
+          <select [(ngModel)]="limit" (change)="changeLimit()">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
+      </div>
+      <div class="pagination-buttons">
+        <button
+          type="button"
+          class="page-btn"
+          (click)="prevPage()"
+          [disabled]="page() <= 1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Anterior
+        </button>
+        <button
+          type="button"
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="page() >= totalPages()"
+        >
+          Siguiente
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
   }
 </div>
