@@ -68,12 +68,45 @@ export class EtlService {
 
   /**
    * GET /api/etl/people
-   * Lista todas las personas importadas.
+   * Lista todas las personas importadas con paginación, filtros y búsqueda.
    */
-  getPeople(): Observable<{ success: boolean; data: Person[] }> {
-    return this.http.get<{ success: boolean; data: Person[] }>(
-      `${API_URL}/etl/people`
-    );
+  getPeople(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    estado?: string;
+    ciudad?: string;
+  }): Observable<{
+    success: boolean;
+    data: Person[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }> {
+    let queryParams = new URLSearchParams();
+
+    if (params.page) queryParams.set('page', params.page.toString());
+    if (params.limit) queryParams.set('limit', params.limit.toString());
+    if (params.search) queryParams.set('search', params.search);
+    if (params.estado) queryParams.set('estado', params.estado);
+    if (params.ciudad) queryParams.set('ciudad', params.ciudad);
+
+    const queryString = queryParams.toString();
+    const url = `${API_URL}/etl/people${queryString ? `?${queryString}` : ''}`;
+
+    return this.http.get<{
+      success: boolean;
+      data: Person[];
+      pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+      };
+    }>(url);
   }
 
   /**

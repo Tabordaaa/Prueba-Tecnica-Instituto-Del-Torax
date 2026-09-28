@@ -1,0 +1,112 @@
+<div class="card wide">
+  <h1>Consulta de Registros</h1>
+
+  @if (errorMessage()) {
+    <p class="alert">{{ errorMessage() }}</p>
+  }
+
+  <!-- Filtros y búsqueda -->
+  <div class="filters">
+    <div class="filter-group">
+      <label for="search">Buscar:</label>
+      <input
+        id="search"
+        type="text"
+        [(ngModel)]="search"
+        placeholder="Documento, nombre, apellidos o email"
+        (keyup.enter)="applyFilters()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="estado">Estado:</label>
+      <select id="estado" [(ngModel)]="estado" (change)="applyFilters()">
+        <option value="">Todos</option>
+        <option value="ACTIVO">Activo</option>
+        <option value="INACTIVO">Inactivo</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="ciudad">Ciudad:</label>
+      <input
+        id="ciudad"
+        type="text"
+        [(ngModel)]="ciudad"
+        placeholder="Ciudad"
+        (keyup.enter)="applyFilters()"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <button type="button" (click)="applyFilters()">Buscar</button>
+      <button type="button" class="secondary" (click)="clearFilters()">
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p class="loading">Cargando registros...</p>
+  } @else {
+    <!-- Tabla de registros -->
+    <table class="records-table">
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>Email</th>
+          <th>Ciudad</th>
+          <th>Estado</th>
+          <th>Fecha de nacimiento</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (record of records(); track record.id) {
+          <tr>
+            <td>{{ record.documento }}</td>
+            <td>{{ record.nombres }}</td>
+            <td>{{ record.apellidos }}</td>
+            <td>{{ record.email }}</td>
+            <td>{{ record.ciudad }}</td>
+            <td>
+              <span class="status-badge" [class]="getEstadoClass(record.estado)">
+                {{ getEstadoLabel(record.estado) }}
+              </span>
+            </td>
+            <td>{{ record.fechaNacimiento | date: 'dd/MM/yyyy' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7">No se encontraron registros</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- Paginación -->
+    <div class="pagination">
+      <p>
+        Mostrando {{ records().length }} de {{ total() }} registros
+        (Página {{ page() }} de {{ totalPages() }})
+      </p>
+      <div class="pagination-buttons">
+        <button
+          type="button"
+          (click)="prevPage()"
+          [disabled]="page() <= 1"
+        >
+          Anterior
+        </button>
+        <button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="page() >= totalPages()"
+        >
+          Siguiente
+        </button>
+      </div>
+    </div>
+  }
+</div>

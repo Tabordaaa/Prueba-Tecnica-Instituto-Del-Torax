@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -143,16 +144,61 @@ export class EtlController {
 
   /**
    * GET /api/etl/people
-   * Lista todas las personas importadas.
+   * Lista todas las personas importadas con paginación, filtros y búsqueda.
+   *
+   * Query params:
+   * - page: número de página (default: 1)
+   * - limit: registros por página (default: 10)
+   * - search: búsqueda por documento, nombre, apellidos o email
+   * - estado: filtro por estado (ACTIVO, INACTIVO)
+   * - ciudad: filtro por ciudad
    */
-  async findAll() {
-    const people = await this.personRepository.find({
-      order: { createdAt: 'DESC' },
-    });
+  @Get('people')
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('search') search?: string,
+    @Query('estado') estado?: string,
+    @Query('ciudad') ciudad?: string,
+  ) {
+    const queryBuilder = this.personRepository.createQueryBuilder('person');
+
+    // Búsqueda por documento, nombre, apellidos o email
+    if (search) {
+      queryBuilder.andWhere(
+        '(person.documento LIKE :search OR person.nombres LIKE :search OR person.apellidos LIKE :search OR person.email LIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    // Filtro por estado
+    if (estado) {
+      queryBuilder.andWhere('person.estado = :estado', { estado });
+    }
+
+    // Filtro por ciudad
+    if (ciudad) {
+      queryBuilder.andWhere('person.ciudad = :ciudad', { ciudad });
+    }
+
+    // Paginación
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    // Ordenar por fecha de creación descendente
+    queryBuilder.orderBy('person.createdAt', 'DESC');
+
+    const [data, total] = await queryBuilder.getManyAndCount();
 
     return {
       success: true,
-      data: people,
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 }
