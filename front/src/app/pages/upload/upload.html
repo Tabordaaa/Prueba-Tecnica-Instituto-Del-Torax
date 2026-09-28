@@ -1,0 +1,288 @@
+<div class="upload-container">
+  <div class="upload-header">
+    <h1>Carga y Procesamiento ETL</h1>
+    <p class="upload-subtitle">Sube un archivo CSV para validar y procesar los datos</p>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="alert">{{ errorMessage() }}</p>
+  }
+  @if (successMessage()) {
+    <p class="alert ok">{{ successMessage() }}</p>
+  }
+
+  <!-- Zona de subida -->
+  <section class="upload-section">
+    <div class="upload-zone" [class.drag-over]="dragOver()">
+      <input
+        type="file"
+        id="fileInput"
+        accept=".csv"
+        (change)="onFileSelected($event)"
+        hidden
+      />
+
+      @if (!fileName()) {
+        <div class="upload-prompt">
+          <label for="fileInput" class="upload-label">
+            <div class="upload-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <p class="upload-text">Arrastra un archivo CSV aquí o haz clic para seleccionarlo</p>
+            <small class="upload-hint">
+              Columnas requeridas: tipo_documento, documento, nombres, apellidos, fecha_nacimiento, email, ciudad, estado
+            </small>
+          </label>
+        </div>
+      } @else {
+        <div class="file-info">
+          <div class="file-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+          </div>
+          <div class="file-details">
+            <p class="file-name">{{ fileName() }}</p>
+            <button type="button" class="btn-link" (click)="clearFile()">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              Cambiar archivo
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Botón de procesar ETL -->
+    @if (state() === 'validated' && validationResult()?.validRows! > 0) {
+      <div class="action-buttons">
+        <button
+          type="button"
+          class="btn-primary btn-large"
+          (click)="processEtl()"
+          [disabled]="state() === 'processing'"
+        >
+          @if (state() === 'processing') {
+            <span class="spinner-small"></span>
+            Procesando...
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Procesar ETL
+          }
+        </button>
+      </div>
+    }
+  </section>
+
+  <!-- Resumen de validación -->
+  @if (validationResult(); as result) {
+    <section class="upload-section">
+      <div class="section-header">
+        <h2>Resumen de Validación</h2>
+        <span class="section-badge">{{ result.totalRows }} registros</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ result.totalRows }}</span>
+            <span class="stat-label">Total de registros</span>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ result.validRows }}</span>
+            <span class="stat-label">Válidos</span>
+          </div>
+        </div>
+
+        <div class="stat-card danger">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ result.invalidRows }}</span>
+            <span class="stat-label">Con errores</span>
+          </div>
+        </div>
+      </div>
+
+      @if (result.errors.length > 0) {
+        <div class="errors-list">
+          <h3>Errores encontrados:</h3>
+          <ul>
+            @for (error of result.errors; track $index) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </section>
+  }
+
+  <!-- Resultados del ETL -->
+  @if (etlResult(); as etl) {
+    <section class="upload-section">
+      <div class="section-header">
+        <h2>Resultados del Proceso ETL</h2>
+        <span class="section-badge">Importación #{{ etl.data.importId }}</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ etl.data.totalRows }}</span>
+            <span class="stat-label">Total de registros</span>
+          </div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ etl.data.importedRows }}</span>
+            <span class="stat-label">Importados</span>
+          </div>
+        </div>
+
+        <div class="stat-card danger">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ etl.data.invalidRows }}</span>
+            <span class="stat-label">Con errores</span>
+          </div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ etl.data.duplicatesFound }}</span>
+            <span class="stat-label">Duplicados</span>
+          </div>
+        </div>
+      </div>
+
+      @if (etl.data.errors.length > 0) {
+        <div class="table-container">
+          <table class="errors-table">
+            <thead>
+              <tr>
+                <th>Fila</th>
+                <th>Campo</th>
+                <th>Valor recibido</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (error of paginatedErrors(); track $index) {
+                <tr>
+                  <td>{{ error.rowNumber }}</td>
+                  <td>
+                    <span class="field-badge">{{ error.field }}</span>
+                  </td>
+                  <td class="received-value">{{ error.receivedValue }}</td>
+                  <td>{{ error.errorMessage }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="empty-cell">No hay errores</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación de errores -->
+        <div class="pagination">
+          <div class="pagination-info">
+            <p>
+              Mostrando {{ paginatedErrors().length }} de {{ errorsTotal() }} errores
+              (Página {{ errorsPage() }} de {{ errorsTotalPages() }})
+            </p>
+            <div class="limit-selector">
+              <label>Mostrar:</label>
+              <select [(ngModel)]="errorsLimit" (change)="changeErrorsLimit()">
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+          </div>
+          <div class="pagination-buttons">
+            <button
+              type="button"
+              class="page-btn"
+              (click)="prevErrorsPage()"
+              [disabled]="errorsPage() <= 1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              Anterior
+            </button>
+            <button
+              type="button"
+              class="page-btn"
+              (click)="nextErrorsPage()"
+              [disabled]="errorsPage() >= errorsTotalPages()"
+            >
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+  }
+</div>

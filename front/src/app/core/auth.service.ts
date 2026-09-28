@@ -13,15 +13,15 @@ export type ViewKey =
   | 'dashboard'
   | 'users'
   | 'upload'
-  | 'etl'
+  | 'history'
   | 'records'
   | 'errors'
   | 'reports';
 
 /** Permisos por rol: que vistas puede ver cada rol. */
 const ROLE_PERMISSIONS: Record<string, ViewKey[]> = {
-  admin: ['dashboard', 'users', 'upload', 'etl', 'records', 'errors', 'reports'],
-  operator: ['dashboard', 'upload', 'etl', 'records', 'errors', 'reports'],
+  admin: ['dashboard', 'users', 'upload', 'history', 'records', 'errors', 'reports'],
+  operator: ['dashboard', 'upload', 'history', 'records', 'errors', 'reports'],
   query: ['dashboard', 'records', 'errors', 'reports'],
 };
 

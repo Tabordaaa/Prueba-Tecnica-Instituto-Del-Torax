@@ -28,6 +28,8 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
+    console.log('[RolesGuard] Roles requeridos:', requiredRoles);
+
     // La ruta no restringe roles: con estar autenticado es suficiente
     if (!requiredRoles || requiredRoles.length === 0) {
       return true;
@@ -35,10 +37,15 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
 
+    console.log('[RolesGuard] Usuario:', user);
+    console.log('[RolesGuard] Rol del usuario:', user?.role);
+
     if (!user || !requiredRoles.includes(user.role)) {
+      console.log('[RolesGuard] Sin permiso, devolviendo 404');
       throw new NotFoundException('Recurso no encontrado');
     }
 
+    console.log('[RolesGuard] Acceso permitido');
     return true;
   }
 }
