@@ -1,0 +1,65 @@
+<div class="card wide">
+  <h1>Consulta de Errores</h1>
+
+  @if (errorMessage()) {
+    <p class="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="loading">Cargando...</p>
+  } @else {
+    <!-- Selector de archivos -->
+    <div class="file-selector">
+      <label for="fileSelect">Seleccionar archivo:</label>
+      <select
+        id="fileSelect"
+        [ngModel]="selectedFileId()"
+        (ngModelChange)="selectFile($event)"
+      >
+        @for (file of files(); track file.importId) {
+          <option [value]="file.importId">
+            {{ file.fileName }} ({{ file.errorCount }} errores)
+          </option>
+        }
+      </select>
+    </div>
+
+    <!-- Resumen de errores -->
+    <div class="errors-summary">
+      <p>
+        Archivo: <strong>{{ getSelectedFileName() }}</strong>
+      </p>
+      <p>Errores encontrados: <strong>{{ errors().length }}</strong></p>
+    </div>
+
+    <!-- Tabla de errores -->
+    @if (errors().length > 0) {
+      <table class="errors-table">
+        <thead>
+          <tr>
+            <th>Fila</th>
+            <th>Campo</th>
+            <th>Valor</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (error of errors(); track $index) {
+            <tr>
+              <td>{{ error.rowNumber }}</td>
+              <td>
+                <span class="field-badge" [class]="getErrorClass(error.field)">
+                  {{ error.field }}
+                </span>
+              </td>
+              <td class="received-value">{{ error.receivedValue }}</td>
+              <td>{{ error.errorMessage }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <p class="no-errors">No se encontraron errores en este archivo.</p>
+    }
+  }
+</div>

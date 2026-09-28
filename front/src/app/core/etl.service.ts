@@ -85,4 +85,51 @@ export class EtlService {
       `${API_URL}/etl/history`
     );
   }
+
+  /**
+   * GET /api/etl/errors
+   * Obtiene todos los errores con el nombre del archivo.
+   */
+  getAllErrors(): Observable<{ success: boolean; data: ImportErrorItem[] }> {
+    return this.http.get<{ success: boolean; data: ImportErrorItem[] }>(
+      `${API_URL}/etl/errors`
+    );
+  }
+
+  /**
+   * GET /api/etl/errors/files
+   * Obtiene la lista de archivos que tienen errores.
+   */
+  getFilesWithErrors(): Observable<{ success: boolean; data: FileWithError[] }> {
+    return this.http.get<{ success: boolean; data: FileWithError[] }>(
+      `${API_URL}/etl/errors/files`
+    );
+  }
+
+  /**
+   * GET /api/etl/errors/:importId
+   * Obtiene los errores de una importación específica.
+   */
+  getErrors(
+    importId: number,
+  ): Observable<{ success: boolean; data: ImportErrorItem[] }> {
+    return this.http.get<{ success: boolean; data: ImportErrorItem[] }>(
+      `${API_URL}/etl/errors/${importId}`
+    );
+  }
+}
+
+export interface ImportErrorItem {
+  importId: number;
+  fileName: string;
+  rowNumber: number;
+  field: string;
+  receivedValue: string;
+  errorMessage: string;
+}
+
+export interface FileWithError {
+  importId: number;
+  fileName: string;
+  errorCount: number;
 }

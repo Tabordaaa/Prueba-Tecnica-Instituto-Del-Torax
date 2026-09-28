@@ -3,6 +3,8 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
+  Param,
+  ParseIntPipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -94,6 +96,48 @@ export class EtlController {
     return {
       success: true,
       data: history,
+    };
+  }
+
+  /**
+   * GET /api/etl/errors
+   * Obtiene todos los errores con el nombre del archivo.
+   */
+  @Get('errors')
+  async getAllErrors() {
+    const errors = await this.etlService.getAllErrors();
+
+    return {
+      success: true,
+      data: errors,
+    };
+  }
+
+  /**
+   * GET /api/etl/errors/files
+   * Obtiene la lista de archivos que tienen errores.
+   */
+  @Get('errors/files')
+  async getFilesWithErrors() {
+    const files = await this.etlService.getFilesWithErrors();
+
+    return {
+      success: true,
+      data: files,
+    };
+  }
+
+  /**
+   * GET /api/etl/errors/:importId
+   * Obtiene los errores de una importación específica.
+   */
+  @Get('errors/:importId')
+  async getErrors(@Param('importId', ParseIntPipe) importId: number) {
+    const errors = await this.etlService.getErrors(importId);
+
+    return {
+      success: true,
+      data: errors,
     };
   }
 

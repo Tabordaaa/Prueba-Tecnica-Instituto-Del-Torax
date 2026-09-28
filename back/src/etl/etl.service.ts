@@ -405,6 +405,95 @@ export class EtlService {
     }));
   }
 
+  /**
+   * Obtiene los errores de una importación específica.
+   */
+  async getErrors(
+    importId: number,
+  ): Promise<
+    Array<{
+      rowNumber: number;
+      field: string;
+      receivedValue: string;
+      errorMessage: string;
+    }>
+  > {
+    const errors = await this.importErrorRepository.find({
+      where: { importId },
+      order: { rowNumber: 'ASC' },
+    });
+
+    return errors.map((error) => ({
+      rowNumber: error.rowNumber,
+      field: error.field,
+      receivedValue: error.receivedValue ?? '',
+      errorMessage: error.errorMessage,
+    }));
+  }
+
+  /**
+   * Obtiene todos los errores con el nombre del archivo asociado.
+   */
+  async getAllErrors(): Promise<
+    Array<{
+      importId: number;
+      fileName: string;
+      rowNumber: number;
+      field: string;
+      receivedValue: string;
+      errorMessage: string;
+    }>
+  > {
+    const errors = await this.importErrorRepository.find({
+      relations: { importRecord: true },
+      order: { rowNumber: 'ASC' },
+    });
+
+    return errors.map((error) => ({
+      importId: error.importId,
+      fileName: error.importRecord?.fileName ?? 'Desconocido',
+      rowNumber: error.rowNumber,
+      field: error.field,
+      receivedValue: error.receivedValue ?? '',
+      errorMessage: error.errorMessage,
+    }));
+  }
+
+  /**
+   * Obtiene la lista de archivos que tienen errores.
+   */
+  async getFilesWithErrors(): Promise<
+    Array<{
+      importId: number;
+      fileName: string;
+      errorCount: number;
+    }>
+  > {
+    const errors = await this.importErrorRepository.find({
+      relations: { importRecord: true },
+    });
+
+    // Agrupar por archivo y contar errores
+    const fileMap = new Map<number, { fileName: string; errorCount: number }>();
+
+    for (const error of errors) {
+      const existing = fileMap.get(error.importId);
+      if (existing) {
+        existing.errorCount++;
+      } else {
+        fileMap.set(error.importId, {
+          fileName: error.importRecord?.fileName ?? 'Desconocido',
+          errorCount: 1,
+        });
+      }
+    }
+
+    return Array.from(fileMap.entries()).map(([importId, data]) => ({
+      importId,
+      ...data,
+    }));
+  }
+
   private chunkArray<T>(array: T[], size: number): T[][] {
     const chunks: T[][] = [];
     for (let i = 0; i < array.length; i += size) {

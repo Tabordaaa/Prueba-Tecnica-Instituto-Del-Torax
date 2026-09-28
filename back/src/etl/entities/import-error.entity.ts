@@ -2,8 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { ImportRecord } from './import-record.entity';
 
 /**
  * Error de importación ETL.
@@ -16,6 +20,10 @@ export class ImportError {
 
   @Column({ type: 'int' })
   importId: number;
+
+  @ManyToOne(() => ImportRecord, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'importId' })
+  importRecord: ImportRecord;
 
   @Column()
   rowNumber: number;
