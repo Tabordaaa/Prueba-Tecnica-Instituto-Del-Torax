@@ -22,7 +22,7 @@ export type ViewKey =
 const ROLE_PERMISSIONS: Record<string, ViewKey[]> = {
   admin: ['dashboard', 'users', 'upload', 'history', 'records', 'errors', 'reports'],
   operator: ['dashboard', 'upload', 'history', 'records', 'errors', 'reports'],
-  query: ['dashboard', 'history', 'records', 'errors', 'reports'],
+  query: ['dashboard', 'records', 'errors', 'reports'],
 };
 
 @Injectable({ providedIn: 'root' })
