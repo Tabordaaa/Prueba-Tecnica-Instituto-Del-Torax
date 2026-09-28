@@ -166,6 +166,80 @@ export class EtlService {
   }
 
   /**
+   * GET /api/etl/reports/errors-by-type
+   * Obtiene los errores agrupados por tipo de campo.
+   */
+  getErrorsByType(): Observable<{
+    success: boolean;
+    data: Array<{ field: string; count: number; percentage: number }>;
+  }> {
+    return this.http.get<{
+      success: boolean;
+      data: Array<{ field: string; count: number; percentage: number }>;
+    }>(`${API_URL}/etl/reports/errors-by-type`);
+  }
+
+  /**
+   * GET /api/etl/reports/trends
+   * Obtiene las tendencias de importaciones por mes.
+   */
+  getTrends(): Observable<{
+    success: boolean;
+    data: Array<{
+      month: string;
+      files: number;
+      validRows: number;
+      invalidRows: number;
+    }>;
+  }> {
+    return this.http.get<{
+      success: boolean;
+      data: Array<{
+        month: string;
+        files: number;
+        validRows: number;
+        invalidRows: number;
+      }>;
+    }>(`${API_URL}/etl/reports/trends`);
+  }
+
+  /**
+   * GET /api/etl/reports/summary
+   * Obtiene el resumen de importaciones para la tabla de reportes.
+   */
+  getReportSummary(): Observable<{
+    success: boolean;
+    data: Array<{
+      id: number;
+      fileName: string;
+      importedAt: string;
+      importedByName: string;
+      totalRows: number;
+      validRows: number;
+      invalidRows: number;
+      duplicatesFound: number;
+      importedRows: number;
+      status: string;
+    }>;
+  }> {
+    return this.http.get<{
+      success: boolean;
+      data: Array<{
+        id: number;
+        fileName: string;
+        importedAt: string;
+        importedByName: string;
+        totalRows: number;
+        validRows: number;
+        invalidRows: number;
+        duplicatesFound: number;
+        importedRows: number;
+        status: string;
+      }>;
+    }>(`${API_URL}/etl/reports/summary`);
+  }
+
+  /**
    * GET /api/etl/errors/:importId
    * Obtiene los errores de una importación específica.
    */
