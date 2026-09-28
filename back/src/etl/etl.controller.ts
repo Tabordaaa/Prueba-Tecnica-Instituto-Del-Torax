@@ -11,6 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -21,6 +22,8 @@ import { Person } from './entities/person.entity';
 import { EtlService } from './etl.service';
 import { User } from '../users/entities/user.entity';
 
+@ApiTags('etl')
+@ApiBearerAuth() // todas las rutas exigen token (JwtAuthGuard es global)
 @Controller('etl')
 export class EtlController {
   constructor(
@@ -173,6 +176,15 @@ export class EtlController {
    */
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
+  // Necesario para que Swagger UI muestre el campo de seleccion de archivo
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file'],
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
   async uploadAndProcess(
     @UploadedFile() file: any,
     @CurrentUser() user: any,

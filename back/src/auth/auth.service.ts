@@ -8,6 +8,12 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtPayload } from './strategies/jwt.strategy';
 
+/** Respuesta del login que recibe el front (el usuario nunca incluye el hash). */
+export interface LoginResponse {
+  accessToken: string;
+  user: Omit<User, 'password'>;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -21,7 +27,7 @@ export class AuthService {
   }
 
   /** Login: valida credenciales y devuelve el token de acceso. */
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
     const user = await this.usersService.findByEmailWithPassword(loginDto.email);
 
     const passwordMatches =
