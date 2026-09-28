@@ -44,6 +44,7 @@ export class EtlService {
   async processCsv(
     file: { originalname: string; buffer: Buffer },
     userId: number,
+    userName: string,
   ): Promise<EtlResult> {
     console.log('[EtlService] Iniciando proceso ETL...');
     console.log('[EtlService] Archivo:', file?.originalname);
@@ -92,13 +93,14 @@ export class EtlService {
       importRecord = await this.importRecordRepository.save(
         this.importRecordRepository.create({
           fileName: file.originalname,
+          importedBy: userId,
+          importedByName: userName,
           totalRows: lines.length - 1,
           validRows: 0,
           invalidRows: 0,
           duplicatesFound: 0,
           importedRows: 0,
-          importedBy: userId,
-          status: 'processing',
+          status: 'PROCESSING',
         }),
       );
       console.log('[EtlService] Registro de importación creado:', importRecord.id);
@@ -364,6 +366,43 @@ export class EtlService {
       errors,
       person: errors.length === 0 ? person : undefined,
     };
+  }
+
+  /**
+   * Obtiene el historial de archivos importados.
+   */
+  async getHistory(): Promise<
+    Array<{
+      id: number;
+      fileName: string;
+      importedAt: Date;
+      importedBy: number;
+      importedByName: string;
+      totalRows: number;
+      validRows: number;
+      invalidRows: number;
+      duplicatesFound: number;
+      importedRows: number;
+      status: string;
+    }>
+  > {
+    const records = await this.importRecordRepository.find({
+      order: { importedAt: 'DESC' },
+    });
+
+    return records.map((record) => ({
+      id: record.id,
+      fileName: record.fileName,
+      importedAt: record.importedAt,
+      importedBy: record.importedBy,
+      importedByName: record.importedByName ?? 'Desconocido',
+      totalRows: record.totalRows,
+      validRows: record.validRows,
+      invalidRows: record.invalidRows,
+      duplicatesFound: record.duplicatesFound,
+      importedRows: record.importedRows,
+      status: record.status,
+    }));
   }
 
   private chunkArray<T>(array: T[], size: number): T[][] {

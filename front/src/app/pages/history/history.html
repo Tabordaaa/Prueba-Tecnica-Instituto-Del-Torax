@@ -1,0 +1,48 @@
+<div class="card wide">
+  <h1>Historial de Archivos</h1>
+
+  @if (errorMessage()) {
+    <p class="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="loading">Cargando historial...</p>
+  } @else {
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre del archivo</th>
+          <th>Fecha de carga</th>
+          <th>Usuario</th>
+          <th>Total registros</th>
+          <th>Válidos</th>
+          <th>Inválidos</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of history(); track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.fileName }}</td>
+            <td>{{ item.importedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ item.importedByName }}</td>
+            <td>{{ item.totalRows }}</td>
+            <td class="valid">{{ item.validRows }}</td>
+            <td class="invalid">{{ item.invalidRows }}</td>
+            <td>
+              <span class="status-badge" [class]="getStatusClass(item.status)">
+                {{ getStatusLabel(item.status) }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8">No hay archivos importados</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

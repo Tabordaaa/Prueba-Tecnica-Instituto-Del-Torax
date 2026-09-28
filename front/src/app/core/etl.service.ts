@@ -37,6 +37,20 @@ export interface Person {
   createdAt: string;
 }
 
+export interface HistoryItem {
+  id: number;
+  fileName: string;
+  importedAt: string;
+  importedBy: number;
+  importedByName: string;
+  totalRows: number;
+  validRows: number;
+  invalidRows: number;
+  duplicatesFound: number;
+  importedRows: number;
+  status: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EtlService {
   private readonly http = inject(HttpClient);
@@ -59,6 +73,16 @@ export class EtlService {
   getPeople(): Observable<{ success: boolean; data: Person[] }> {
     return this.http.get<{ success: boolean; data: Person[] }>(
       `${API_URL}/etl/people`
+    );
+  }
+
+  /**
+   * GET /api/etl/history
+   * Obtiene el historial de archivos importados.
+   */
+  getHistory(): Observable<{ success: boolean; data: HistoryItem[] }> {
+    return this.http.get<{ success: boolean; data: HistoryItem[] }>(
+      `${API_URL}/etl/history`
     );
   }
 }

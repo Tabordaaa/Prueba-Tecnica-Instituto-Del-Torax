@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  Get,
   InternalServerErrorException,
   Post,
   UploadedFile,
@@ -30,7 +31,7 @@ export class EtlController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadAndProcess(
     @UploadedFile() file: any,
-    @CurrentUser() user: { id: number },
+    @CurrentUser() user: any,
   ) {
     try {
       console.log('[EtlController] Recibiendo archivo...');
@@ -47,7 +48,11 @@ export class EtlController {
         throw new BadRequestException('Solo se permiten archivos .csv');
       }
 
-      const result = await this.etlService.processCsv(file, user.id);
+      const result = await this.etlService.processCsv(
+        file,
+        user.id,
+        user.name ?? user.email,
+      );
 
       return {
         success: true,
@@ -76,6 +81,20 @@ export class EtlController {
         `Error al procesar el archivo: ${message}`,
       );
     }
+  }
+
+  /**
+   * GET /api/etl/history
+   * Obtiene el historial de archivos importados.
+   */
+  @Get('history')
+  async getHistory() {
+    const history = await this.etlService.getHistory();
+
+    return {
+      success: true,
+      data: history,
+    };
   }
 
   /**

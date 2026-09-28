@@ -12,8 +12,8 @@
       @if (authService.canView('upload')) {
         <a routerLink="/upload" routerLinkActive="active">Cargar Archivos</a>
       }
-      @if (authService.canView('etl')) {
-        <a routerLink="/etl" routerLinkActive="active">Procesar ETL</a>
+      @if (authService.canView('history')) {
+        <a routerLink="/history" routerLinkActive="active">Historial</a>
       }
       @if (authService.canView('records')) {
         <a routerLink="/records" routerLinkActive="active">Consultar Registros</a>
